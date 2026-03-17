@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>QuickMart</title>
+<title>QuickMart Pro</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f4f4f4;
-}
+body{margin:0;font-family:Arial;background:#f4f4f4}
 
 /* Navbar */
 nav{
-  background:#0a0a0a;
+  background:#111;
   color:white;
   padding:15px;
   display:flex;
@@ -20,54 +16,38 @@ nav{
   align-items:center;
 }
 
-nav h2{
-  margin:0;
-  color:#00ff99;
-}
+nav h2{color:#00ffcc;margin:0}
 
-nav a{
-  color:white;
-  margin:0 10px;
-  text-decoration:none;
-}
-
-/* Hero Section */
-.hero{
-  background:linear-gradient(to right,#00ff99,#00ccff);
+.cart{
+  background:#00ffcc;
   color:black;
-  text-align:center;
-  padding:50px;
+  padding:5px 10px;
+  border-radius:5px;
 }
 
-.hero h1{
-  margin:0;
-  font-size:40px;
+/* Hero */
+.hero{
+  text-align:center;
+  padding:40px;
+  background:linear-gradient(to right,#00ffcc,#00ccff);
 }
 
 /* Products */
-.container{
-  padding:20px;
-  text-align:center;
-}
-
 .products{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
   gap:20px;
+  padding:20px;
 }
 
 .card{
   background:white;
   padding:20px;
   width:220px;
-  border-radius:12px;
+  border-radius:10px;
+  text-align:center;
   box-shadow:0 0 10px rgba(0,0,0,0.1);
-  transition:0.3s;
-}
-
-.card:hover{
-  transform:scale(1.07);
 }
 
 button{
@@ -76,20 +56,19 @@ button{
   border:none;
   padding:10px;
   cursor:pointer;
-  border-radius:5px;
 }
 
-button:hover{
-  background:#00994d;
-}
+button:hover{background:#00994d}
 
-/* Footer */
-footer{
-  background:#111;
-  color:white;
-  text-align:center;
+/* Cart Box */
+.cart-box{
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  background:white;
   padding:15px;
-  margin-top:30px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.2);
 }
 </style>
 
@@ -97,57 +76,60 @@ footer{
 
 <body>
 
-<!-- Navbar -->
 <nav>
-  <h2>QuickMart</h2>
-  <div>
-    <a href="#">Home</a>
-    <a href="#">Products</a>
-    <a href="#">Contact</a>
-  </div>
+  <h2>QuickMart Pro 🛒</h2>
+  <div class="cart">Cart: <span id="count">0</span></div>
 </nav>
 
-<!-- Hero -->
 <div class="hero">
-  <h1>Welcome to QuickMart 🛒</h1>
-  <p>Best Deals Everyday</p>
+  <h1>Welcome to QuickMart 🚀</h1>
+  <p>Smart Shopping Experience</p>
 </div>
 
-<!-- Products -->
-<div class="container">
-  <h2>Popular Products</h2>
+<div class="products">
 
-  <div class="products">
-
-    <div class="card">
-      <h3>Rice</h3>
-      <p>₹60/kg</p>
-      <button onclick="buy()">Buy Now</button>
-    </div>
-
-    <div class="card">
-      <h3>Sugar</h3>
-      <p>₹50/kg</p>
-      <button onclick="buy()">Buy Now</button>
-    </div>
-
-    <div class="card">
-      <h3>Oil</h3>
-      <p>₹120</p>
-      <button onclick="buy()">Buy Now</button>
-    </div>
-
+  <div class="card">
+    <h3>Rice</h3>
+    <p>₹60</p>
+    <button onclick="add(60,'Rice')">Add to Cart</button>
   </div>
+
+  <div class="card">
+    <h3>Sugar</h3>
+    <p>₹50</p>
+    <button onclick="add(50,'Sugar')">Add to Cart</button>
+  </div>
+
+  <div class="card">
+    <h3>Oil</h3>
+    <p>₹120</p>
+    <button onclick="add(120,'Oil')">Add to Cart</button>
+  </div>
+
 </div>
 
-<!-- Footer -->
-<footer>
-  <p>© 2026 QuickMart | All Rights Reserved</p>
-</footer>
+<div class="cart-box">
+  <p>Total: ₹<span id="total">0</span></p>
+  <button onclick="order()">Order on WhatsApp</button>
+</div>
 
 <script>
-function buy(){
-  alert("Product added to cart 🛒");
+let count=0;
+let total=0;
+let items="";
+
+function add(price,name){
+  count++;
+  total+=price;
+  items += name + ", ";
+  document.getElementById("count").innerText=count;
+  document.getElementById("total").innerText=total;
+}
+
+function order(){
+  let msg = "Order: " + items + " Total ₹" + total;
+  let url = "https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent(msg);
+  window.open(url);
 }
 </script>
 
