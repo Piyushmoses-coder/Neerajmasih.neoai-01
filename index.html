@@ -1,127 +1,123 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>QuickMart Ultra</title>
+<title>QuickMart Boss</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f4f4;transition:0.3s}
-.dark{background:#111;color:white}
-
-/* Navbar */
-nav{
-  background:#000;
-  color:white;
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-}
-
-button{cursor:pointer}
-
-/* Products */
-.products{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:20px;
-  padding:20px;
-}
-
-.card{
-  background:white;
-  padding:15px;
-  width:220px;
-  border-radius:10px;
-  text-align:center;
-}
-
-.dark .card{background:#222;color:white}
-
-img{width:100%;border-radius:10px}
-
-/* Cart */
-.cart-box{
-  position:fixed;
-  bottom:10px;
-  right:10px;
-  background:white;
-  padding:15px;
-  border-radius:10px;
-}
-
-.dark .cart-box{background:#333}
+body{font-family:Arial;margin:0;background:#f4f4f4}
+nav{background:#000;color:#fff;padding:10px;display:flex;justify-content:space-between}
+.container{padding:20px}
+.card{background:#fff;padding:15px;margin:10px;border-radius:10px}
+button{padding:10px;border:none;background:#00cc66;color:#fff;cursor:pointer}
 </style>
-
 </head>
 
 <body>
 
 <nav>
-  <h2>QuickMart Ultra 🛒</h2>
-  <div>
-    <button onclick="toggleDark()">🌙</button>
-    <span>Cart: <span id="count">0</span></span>
-  </div>
+<h2>QuickMart Boss 🛒</h2>
+<span id="user"></span>
 </nav>
 
-<div class="products">
+<div class="container">
+
+<h3>Login</h3>
+<input id="email" placeholder="Email"><br><br>
+<input id="pass" type="password" placeholder="Password"><br><br>
+<button onclick="signup()">Signup</button>
+<button onclick="login()">Login</button>
+
+<hr>
+
+<h3>Products</h3>
 
 <div class="card">
-<img src="https://via.placeholder.com/200">
-<h3>Rice</h3>
-<p>₹60</p>
-<button onclick="add(60,'Rice')">Add</button>
+Rice ₹60 <button onclick="add('Rice',60)">Add</button>
 </div>
 
 <div class="card">
-<img src="https://via.placeholder.com/200">
-<h3>Sugar</h3>
-<p>₹50</p>
-<button onclick="add(50,'Sugar')">Add</button>
+Sugar ₹50 <button onclick="add('Sugar',50)">Add</button>
 </div>
 
 <div class="card">
-<img src="https://via.placeholder.com/200">
-<h3>Oil</h3>
-<p>₹120</p>
-<button onclick="add(120,'Oil')">Add</button>
+Oil ₹120 <button onclick="add('Oil',120)">Add</button>
 </div>
 
-</div>
+<hr>
 
-<div class="cart-box">
+<h3>Cart</h3>
+<p id="cart"></p>
 <p>Total: ₹<span id="total">0</span></p>
-<button onclick="order()">Order</button>
+
+<button onclick="order()">Place Order</button>
+
 </div>
 
 <script>
-let count = localStorage.getItem("count") || 0;
-let total = localStorage.getItem("total") || 0;
-let items = localStorage.getItem("items") || "";
+const firebaseConfig = {
+  apiKey: "PASTE",
+};
 
-document.getElementById("count").innerText = count;
-document.getElementById("total").innerText = total;
+firebase.initializeApp(firebaseConfig);
 
-function add(price,name){
-  count++;
-  total = Number(total) + price;
-  items += name + ", ";
-  
-  localStorage.setItem("count",count);
-  localStorage.setItem("total",total);
-  localStorage.setItem("items",items);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  document.getElementById("count").innerText=count;
-  document.getElementById("total").innerText=total;
+let cart = [];
+let total = 0;
+let userEmail = "";
+
+// Signup
+function signup(){
+  let e = email.value;
+  let p = pass.value;
+  auth.createUserWithEmailAndPassword(e,p)
+  .then(()=>alert("Signup Success"))
+  .catch(err=>alert(err.message));
 }
 
+// Login
+function login(){
+  let e = email.value;
+  let p = pass.value;
+  auth.signInWithEmailAndPassword(e,p)
+  .then(user=>{
+    userEmail = user.user.email;
+    document.getElementById("user").innerText = userEmail;
+    alert("Login Success");
+  })
+  .catch(err=>alert(err.message));
+}
+
+// Add to cart
+function add(name,price){
+  cart.push(name);
+  total += price;
+  document.getElementById("cart").innerText = cart.join(", ");
+  document.getElementById("total").innerText = total;
+}
+
+// Place order
 function order(){
-  let msg = "Order: " + items + " Total ₹" + total;
-  window.open("https://wa.me/91XXXXXXXXXX?text=" + encodeURIComponent(msg));
-}
+  if(!userEmail){
+    alert("Login first");
+    return;
+  }
 
-function toggleDark(){
-  document.body.classList.toggle("dark");
+  db.collection("orders").add({
+    user: userEmail,
+    items: cart,
+    total: total,
+    time: new Date()
+  })
+  .then(()=>{
+    alert("Order Placed 🔥");
+    window.open("https://wa.me/91XXXXXXXXXX?text=Order:"+cart.join(",")+" Total ₹"+total);
+  });
 }
 </script>
 
